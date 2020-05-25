@@ -1,8 +1,7 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/Login">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <h1>民航后台服务系统</h1>
     </div>
     <router-view/>
   </div>
