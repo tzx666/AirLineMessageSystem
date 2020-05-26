@@ -8,7 +8,7 @@ var global_msg={
 }
 Vue.prototype.$global_msg = global_msg
 Vue.use(VueRouter)
-
+Vue.use(require('vue-cookies'))
   const routes = [
   {
     path: '/Login',

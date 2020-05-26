@@ -22,7 +22,7 @@
     <el-input v-model="form.name"></el-input>
   </el-form-item>
   <el-form-item label="密码">
-    <el-input v-model="form.password"></el-input>
+    <el-input v-model="form.password" show-password></el-input>
   </el-form-item>
     <el-form-item label="身份">
       <el-select v-model="form.value" placeholder="请选择">
@@ -44,6 +44,7 @@
 </template>
 
 <script>
+var Web3 = require('web3');
  //import Vue from 'vue' 
 export default {
     name: 'Login',
@@ -63,9 +64,36 @@ export default {
       }
     }, methods: {
       onSubmit() {
-        console.log('submit!');
-        this.$global_msg.islogin=true
-        this.$router.push({path:'/mainpage'})
+        if(this.form.name==""||this.form.password==""){
+          this.$message.error('请输入用户名和密码');return;
+        }
+        var res=Web3.utils.sha3(this.form.password)
+        console.log(res)
+        var sendmsg={"name":this.form.name,"password":res,"type":this.form.value}
+        console.log(sendmsg)
+        fetch('http://localhost:9090/api/Login', {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify(sendmsg),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        })
+      }).then(res => 
+          res.text()
+        ).then(data => {
+        console.log(data)
+        if(data==1){
+          this.$global_msg.islogin=true
+          this.$router.push({path:'/mainpage',
+             query: {
+              name: this.form.name,
+               id: this.form.value,
+        }})
+        }else{
+          this.$message.error('密码错误或无权限访问！');
+        }
+      }).then(error=>{console.log(error)})
+        //
       },
       onCancel(){
         this.$router.push({path:'/Register'})

@@ -22,10 +22,13 @@
     <el-input v-model="form.name"></el-input>
   </el-form-item>
   <el-form-item label="密码">
-    <el-input v-model="form.password"></el-input>
+    <el-input v-model="form.password" show-password></el-input>
   </el-form-item>
   <el-form-item label="重复密码">
-    <el-input v-model="form.repeatpassword"></el-input>
+    <el-input v-model="form.repeatpassword" show-password></el-input>
+  </el-form-item>
+  <el-form-item label="真实姓名">
+    <el-input v-model="form.realname"></el-input>
   </el-form-item>
     <el-form-item label="身份">
       <el-select v-model="form.value" placeholder="请选择">
@@ -78,18 +81,53 @@ export default {
           password:'',
           hash:'',
           repeatpassword:'',
-          value1:''
+          value1:'',
+          realname:''
         },options:[],//这里是航司列表
       }
     }, methods: {
       onSubmit() {
         console.log('submit!');
-        this.$global_msg.islogin=true
+        if(this.form.name==""||this.form.password==""||this.form.password!=this.form.repeatpassword
+        ||this.form.staff==""||this.form.hash==""){
+          this.$message.error('信息填写错误！');return;
+        }
+        var msg={
+          name:this.form.name,
+          psw:Web3.utils.sha3(this.form.password),
+          staff:this.form.realname,
+          com:this.form.value1,
+          type:this.form.value,
+          hash:this.form.hash
+        }
+        console.log(msg)
+        fetch('http://localhost:9090/api/Register', {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify(msg),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        })
+      }).then(res => 
+          res.json()
+        ).then(data => {
+        console.log(data)
+        if(data.status==1){
+          this.$message({
+          message: '恭喜你，注册成功',
+          type: 'success'
+        });
+          this.$router.push({path:'/Login'})
+        }else{
+          this.$message.error('注册失败！'+data.res);
+        }
+      }).then(error=>{console.log(error)})
+        //this.$global_msg.islogin=true
         this.$router.push({path:'/Login'})
       },
       onCancel(){
-        var res=Web3.utils.sha3('123456')
-        console.log(res)
+       // var res=
+       // console.log(res)
         this.$router.push({path:'/Login'})
       }
     },

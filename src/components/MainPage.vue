@@ -4,8 +4,12 @@
       <el-menu
       background-color="#545c64"
       text-color="#fff"
-      active-text-color="#ffd04b">
-      
+      active-text-color="#ffd04b"
+       default-active="1"
+       @open="handleOpen"
+      @close="handleClose"
+      @select="handleSelect">
+     
       <el-menu-item index="1">
         <i class="el-icon-menu"></i>
         <span slot="title">总览</span>
@@ -44,13 +48,51 @@
       </el-menu-item>
     </el-menu>
   </el-aside>
-    <el-main>Main</el-main>
+    <el-main v-if="selectMenu[0]==='1'"><MainInfo/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='2'">222 </el-main>
+     <el-main v-else-if="selectMenu[0]==='3'">333 </el-main>
+     <el-main v-else-if="selectMenu[0]==='4'">444 </el-main>
+     <el-main v-else-if="selectMenu[0]==='5'">555 </el-main>
+     <el-main v-else-if="selectMenu[0]==='6'">666 </el-main>
+     <el-main v-else-if="selectMenu[0]==='7'">777 </el-main>
+     <el-main v-else-if="selectMenu[0]==='8'">888 </el-main>
 </el-container>
 </template>
 
 <script>
+import MainInfo from '../mainpages/MainInfo'
 export default {
-    name:'mainpage'
+    name:'mainpage',
+    data(){
+      return{
+        username:'',
+        permission:'',
+        selectMenu:'1'
+      }
+    },
+    created:function(){
+      console.log(
+      this.$route.query)
+      this.username=this.$route.query.name
+      this.permission=this.$route.query.id
+    }, methods: {
+      handleOpen(key, keyPath) {
+        console.log(key, keyPath);
+      },
+      handleClose(key, keyPath) {
+        console.log(key, keyPath);
+      },
+      handleSelect(key,keyPath){
+        this.selectMenu=keyPath
+        if(this.selectMenu[0]==='9'){
+          this.$global_msg.islogin=false
+          this.$router.push({path:'/Login'})
+        }
+        console.log(this.selectMenu[0]);
+      }
+    },components:{
+      MainInfo
+    }
 }
 </script>
 
