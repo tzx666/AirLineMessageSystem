@@ -68,12 +68,13 @@ export default {
           this.$message.error('请输入用户名和密码');return;
         }
         var res=Web3.utils.sha3(this.form.password)
+        var self=this
         console.log(res)
         var sendmsg={"name":this.form.name,"password":res,"type":this.form.value}
         console.log(sendmsg)
         fetch('http://localhost:9090/api/Login', {
         method: 'POST',
-        credentials: 'same-origin',
+        credentials: 'include',
         body: JSON.stringify(sendmsg),
         headers: new Headers({
           'Content-Type': 'application/json'
@@ -83,7 +84,7 @@ export default {
         ).then(data => {
         console.log(data)
         if(data==1){
-          this.$global_msg.islogin=true
+         self.$root.islogin=true
           this.$router.push({path:'/mainpage',
              query: {
               name: this.form.name,
@@ -92,7 +93,7 @@ export default {
         }else{
           this.$message.error('密码错误或无权限访问！');
         }
-      }).then(error=>{console.log(error)})
+      })
         //
       },
       onCancel(){

@@ -1,8 +1,5 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <h1>民航后台服务系统</h1>
-    </div>
     <router-view/>
   </div>
 </template>

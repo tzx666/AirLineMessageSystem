@@ -6,8 +6,6 @@
       text-color="#fff"
       active-text-color="#ffd04b"
        default-active="1"
-       @open="handleOpen"
-      @close="handleClose"
       @select="handleSelect">
      
       <el-menu-item index="1">
@@ -79,20 +77,16 @@ export default {
     },
     created:function(){
       console.log(
-      this.$route.query)
+      this.$route.query,
+      this.$root.islogin)
       this.username=this.$route.query.name
       this.permission=this.$route.query.id
     }, methods: {
-      handleOpen(key, keyPath) {
-        console.log(key, keyPath);
-      },
-      handleClose(key, keyPath) {
-        console.log(key, keyPath);
-      },
       handleSelect(key,keyPath){
         this.selectMenu=keyPath
         if(this.selectMenu[0]==='9'){
-          this.$global_msg.islogin=false
+          console.log('改变了')
+          this.$root.islogin=false
           this.$router.push({path:'/Login'})
         }
         console.log(this.selectMenu[0]);

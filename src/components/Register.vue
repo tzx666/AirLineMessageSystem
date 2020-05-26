@@ -103,7 +103,6 @@ export default {
         console.log(msg)
         fetch('http://localhost:9090/api/Register', {
         method: 'POST',
-        credentials: 'same-origin',
         body: JSON.stringify(msg),
         headers: new Headers({
           'Content-Type': 'application/json'

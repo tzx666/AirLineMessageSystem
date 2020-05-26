@@ -3,10 +3,7 @@ import VueRouter from 'vue-router'
 import Register from '../components/Register.vue'
 import mainpage from '../components/MainPage.vue'
 import Login from '@/components/Login.vue'
-var global_msg={
-  islogin:false
-}
-Vue.prototype.$global_msg = global_msg
+console.log('indes调用')
 Vue.use(VueRouter)
 Vue.use(require('vue-cookies'))
   const routes = [
@@ -39,11 +36,23 @@ Vue.use(require('vue-cookies'))
 const router = new VueRouter({
   routes
 })
-router.beforeEach((to, from, next) => {
-  console.log(Vue.prototype.$global_msg.islogin)
-  //let token = false;
-  if(to.path==from.path){next('/Login');return}
-  if(to.meta.requireAuth&&!Vue.prototype.$global_msg.islogin){next('/Login');return}
-  next();
+router.beforeEach(function(to, from, next) {
+  console.log(from.path+" "+to.path)
+  fetch("http://localhost:9090/isLogin", {
+    method: 'POST',
+    credentials: 'include',
+    headers: new Headers({
+      'Content-Type': 'application/json'
+    })
+  }).then(res => res.text()).then(data => {
+    console.log(data)
+    /*if(from.path===to.pahth){
+      next();return
+    }
+    //let token = false;*/
+    if('/'===to.path){next('/Login');return}
+    if(to.meta.requireAuth&&data==='0'){next('/Login');return}
+    next();
+  }).then(error=>console.log(error))
 });
 export default router
