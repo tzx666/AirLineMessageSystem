@@ -49,18 +49,25 @@
     </el-menu>
   </el-aside>
     <el-main v-if="selectMenu[0]==='1'"><MainInfo/> </el-main>
-     <el-main v-else-if="selectMenu[0]==='2'">222 </el-main>
-     <el-main v-else-if="selectMenu[0]==='3'">333 </el-main>
-     <el-main v-else-if="selectMenu[0]==='4'">444 </el-main>
-     <el-main v-else-if="selectMenu[0]==='5'">555 </el-main>
-     <el-main v-else-if="selectMenu[0]==='6'">666 </el-main>
-     <el-main v-else-if="selectMenu[0]==='7'">777 </el-main>
-     <el-main v-else-if="selectMenu[0]==='8'">888 </el-main>
+     <el-main v-else-if="selectMenu[0]==='2'"><PlaneManage/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='3'"><StationManage/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='4'"><LineManage/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='5'"><AdstorManage/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='6'"><DelayReport/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='7'"><ProfitAyansis/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='8'"><BackUp/> </el-main>
 </el-container>
 </template>
 
 <script>
 import MainInfo from '../mainpages/MainInfo'
+import AdstorManage from'../mainpages/AdstorManage'
+import BackUp from '../mainpages/BackUp'
+import DelayReport from '../mainpages/DelayReport'
+import LineManage from '../mainpages/LineManage'
+import PlaneManage from '../mainpages/PlaneManage'
+import ProfitAyansis from '../mainpages/ProfitAyansis'
+import StationManage from '../mainpages/StationManage'
 export default {
     name:'mainpage',
     data(){
@@ -91,7 +98,14 @@ export default {
         console.log(this.selectMenu[0]);
       }
     },components:{
-      MainInfo
+      MainInfo,
+      AdstorManage,
+      BackUp,
+      DelayReport,
+      LineManage,
+      PlaneManage,
+      ProfitAyansis,
+      StationManage
     }
 }
 </script>
