@@ -80,15 +80,16 @@ export default {
           'Content-Type': 'application/json'
         })
       }).then(res => 
-          res.text()
+          res.json()
         ).then(data => {
         console.log(data)
-        if(data==1){
+        if(data.status==1){
          self.$root.islogin=true
           this.$router.push({path:'/mainpage',
              query: {
               name: this.form.name,
                id: this.form.value,
+              com:data.com
         }})
         }else{
           this.$message.error('密码错误或无权限访问！');

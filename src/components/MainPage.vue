@@ -46,9 +46,9 @@
       </el-menu-item>
     </el-menu>
   </el-aside>
-    <el-main v-if="selectMenu[0]==='1'"><MainInfo/> </el-main>
-     <el-main v-else-if="selectMenu[0]==='2'"><PlaneManage/> </el-main>
-     <el-main v-else-if="selectMenu[0]==='3'"><StationManage/> </el-main>
+    <el-main v-if="selectMenu[0]==='1'"><MainInfo v-bind:com="com"/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='2'"><PlaneManage v-bind:com="com" /> </el-main>
+     <el-main v-else-if="selectMenu[0]==='3'"><StationManage v-bind:com="com"/> </el-main>
      <el-main v-else-if="selectMenu[0]==='4'"><LineManage/> </el-main>
      <el-main v-else-if="selectMenu[0]==='5'"><AdstorManage/> </el-main>
      <el-main v-else-if="selectMenu[0]==='6'"><DelayReport/> </el-main>
@@ -72,7 +72,8 @@ export default {
       return{
         username:'',
         permission:'',
-        selectMenu:'1'
+        selectMenu:'1',
+        com:''
       }
     },
     created:function(){
@@ -81,13 +82,28 @@ export default {
       this.$root.islogin)
       this.username=this.$route.query.name
       this.permission=this.$route.query.id
+      this.com=this.$route.query.com
     }, methods: {
       handleSelect(key,keyPath){
         this.selectMenu=keyPath
         if(this.selectMenu[0]==='9'){
           console.log('改变了')
-          this.$root.islogin=false
-          this.$router.push({path:'/Login'})
+          fetch("http://localhost:9090/api/loginout", {
+            method: 'GET',
+            credentials: 'include',
+            headers: new Headers({
+              'Content-Type': 'application/json'
+            })
+          }).then(res => res.text()).then(data=>{
+            console.log(data)
+            if(data === '登出成功'){
+              this.$root.islogin=false
+               this.$router.push({path:'/Login'})
+            }else{
+              console.log("退出失败")
+            }
+          })
+          
         }
         console.log(this.selectMenu[0]);
       }
@@ -123,7 +139,7 @@ export default {
     background-color: #E9EEF3;
     color: #333;
     text-align: center;
-    line-height: 160px;
+    line-height: 50px;
   }
   
   body > .el-container {
