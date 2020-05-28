@@ -39,6 +39,10 @@
         prop="total"
         label="总座位数">
       </el-table-column>
+      <el-table-column
+        prop="state"
+        label="状态">
+      </el-table-column>
     </el-table>
       </el-col>
     </el-row>

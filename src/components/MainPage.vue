@@ -49,7 +49,7 @@
     <el-main v-if="selectMenu[0]==='1'"><MainInfo v-bind:com="com"/> </el-main>
      <el-main v-else-if="selectMenu[0]==='2'"><PlaneManage v-bind:com="com" /> </el-main>
      <el-main v-else-if="selectMenu[0]==='3'"><StationManage v-bind:com="com"/> </el-main>
-     <el-main v-else-if="selectMenu[0]==='4'"><LineManage/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='4'"><LineManage v-bind:com="com"/> </el-main>
      <el-main v-else-if="selectMenu[0]==='5'"><AdstorManage/> </el-main>
      <el-main v-else-if="selectMenu[0]==='6'"><DelayReport/> </el-main>
      <el-main v-else-if="selectMenu[0]==='7'"><ProfitAyansis/> </el-main>
