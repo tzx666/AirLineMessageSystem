@@ -24,7 +24,7 @@
         <i class="el-icon-menu"></i>
         <span slot="title">航线管理</span>
       </el-menu-item>
-      <el-menu-item index="5" >
+      <el-menu-item index="5" v-if="id=999">
         <i class="el-icon-menu"></i>
         <span slot="title">管理员身份设置</span>
       </el-menu-item>
@@ -36,8 +36,8 @@
         <i class="el-icon-menu"></i>
         <span slot="title">利润分析</span>
       </el-menu-item>
-      <el-menu-item index="8">
-        <i class="el-icon-menu"></i>
+      <el-menu-item index="8" v-if="id=999">
+        <i class="el-icon-menu" ></i>
         <span slot="title">数据备份</span>
       </el-menu-item>
       <el-menu-item index="9">

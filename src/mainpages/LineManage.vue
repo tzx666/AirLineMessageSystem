@@ -1,4 +1,11 @@
 <template>
+<div>
+<h1>航线管理系统</h1>
+<el-row type="flex" justify="center">
+  <el-col :span="16">
+    <el-button  round @click="dialogVisible=true">新建航线</el-button>
+  </el-col>
+</el-row>
     <el-table
       :data="tableData"
       style="width: 100%">
@@ -10,30 +17,32 @@
       <el-table-column
         prop="type"
         label="机型"
-        >
+        width="90">
       </el-table-column>
       <el-table-column
         prop="FullName"
-        label="执飞航司">
+        label="执飞航司"
+        width="110">
       </el-table-column>
       <el-table-column
         prop="takeoffplace"
         label="起飞机场"
-        >
+        width="150">
       </el-table-column>
       <el-table-column
         prop="landplace"
         label="目的机场"
-        >
+        width="150">
       </el-table-column>
       <el-table-column
         prop="pre_takeoff"
-        label="预计起飞时间">
+        label="预计起飞时间"
+        width="180">
       </el-table-column>
       <el-table-column
         prop="pre_landing"
         label="预计到达时间"
-        >
+        width="180">
       </el-table-column>
       <el-table-column
         prop="tickctA_rest"
@@ -75,14 +84,333 @@
         prop="delaycode"
         label="延误代码">
       </el-table-column>
+      <el-table-column label="操作">
+         <template slot-scope="scope">
+        <el-button  type="text" @click="ondel(scope.$index)">删除</el-button>
+        <el-button  type="text" @click="onchange(scope.$index)">修改</el-button>
+         </template>
+      </el-table-column>
     </el-table>
+<el-dialog title="新建航线" :visible.sync="dialogVisible" fullscreen center>
+  <el-form :model="form1" label-width="500px">
+    <el-form-item label="起飞机场" >
+       <el-select v-model="value2" placeholder="选择省" @change="onprivice1Changed">
+    <el-option
+      v-for="item in options"
+      :key="item.value2"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+   <el-select v-model="value3" placeholder="选择市" @change="oncity1change">
+    <el-option
+      v-for="item in options1"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+   <el-select v-model="value4" placeholder="选择机场">
+    <el-option
+      v-for="item in options2"
+      :key="item.value4"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+    </el-form-item>
+        <el-form-item label="到达机场" >
+       <el-select v-model="value5" placeholder="选择省" @change="onprivice2Changed">
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+   <el-select v-model="value6" placeholder="选择市" @change="oncity2change">
+    <el-option
+      v-for="item in options4"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+   <el-select v-model="value7" placeholder="选择机场">
+    <el-option
+      v-for="item in options5"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+    </el-form-item>
+    <el-form-item label="起降时间">
+     <el-date-picker
+     @change="dateChange"
+      v-model="form.value1"
+      start-placeholder="起飞时间"
+      end-placeholder="降落时间"
+      :default-time="['12:00:00']"
+      type="datetimerange"
+      value-format="yyyy-MM-dd HH:mm:ss"
+      placeholder="选择日期时间">
+    </el-date-picker>
+    </el-form-item>
+    <el-form-item label="选择执飞飞机">
+       <el-select v-model="value8" placeholder="请选择" @change="planechanged">
+    <el-option
+      v-for="item in options3"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+    </el-form-item>
+    <el-form-item label="">
+        <span>头等舱座位：{{s1}} 商务舱座位:{{s2}}  经济舱座位:{{s3}} 总数：{{total}}</span>
+    </el-form-item>
+    <el-form-item label="头等舱价格">
+      <el-input v-model="p1" placeholder="" > </el-input>
+    </el-form-item>
+    <el-form-item label="商务舱价格">
+      <el-input v-model="p2" placeholder="" autosize></el-input>
+    </el-form-item>
+    <el-form-item label="经济舱价格">
+      <el-input v-model="p3" placeholder="" autosize></el-input>
+    </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="submit">确 定</el-button>
+  </div>
+</el-dialog>
+    </div>
 </template>
 
 <script>
 export default {
     name:'LineManage',
+    beforeCreate:function(){
+       fetch('http://localhost:9090/sqltest1',{
+            method: 'GET',
+            credentials: 'include',
+            headers: new Headers({
+              'Content-Type': 'application/json'
+            }),
+          }).then(res =>
+      res.json()).then(data => {
+      let midopt = []
+      console.log(data)
+      for (let i = 0; i < data.length; i++) {
+        midopt.push({value: data[i].pinyin, label: data[i].name})
+      }
+      this.options = midopt
+      console.log(this.options)
+    })
+    },
     created:function(){
-        this.tableData=[]
+      /*获取表信息 */
+        this.refresh()
+    },
+    data(){
+        return{
+            tableData:[],
+            dialogVisible:false,
+            form:{
+              name:'',
+              value1:''
+            },
+            options:[],
+            options1:[],
+            options2:[],
+            options3:[],//可用飞机列表
+            options4:[],
+            options5:[],
+            value2:'',
+            value3:'',
+            value4:'',
+            value5:'',
+            value6:'',
+            value7:'',
+            value8:'',
+            p1:'',
+            p2:'',
+            p3:'',
+            s1:'',
+            s2:'',
+            s3:'',
+            total:'',
+            takeoffval:'',
+            landval:'',
+            form1:{
+
+            }
+        }
+    },
+     props: ['com'],
+     methods:{
+       vertDate:function(date){
+              var time = date
+              var dt = new Date(time)
+              var timeStr = dt.getFullYear() + '-' + (dt.getMonth() + 1 < 10 ? "0" + (dt.getMonth()+1 ) : dt.getMonth()+1 ) + '-' + (dt.getDate() + 1 < 10 ? "0" + (dt.getDate() ) : dt.getDate() ) + ' ' 
+              + (dt.getHours() + 1 < 10 ? "0" + (dt.getHours() ) : dt.getHours() ) + ':' + (dt.getMinutes() + 1 < 10 ? "0" + (dt.getMinutes() ) : dt.getMinutes()) 
+              + ':' +(dt.getSeconds() + 1 < 10 ? "0" + (dt.getSeconds()) : dt.getSeconds())
+              return timeStr
+       },
+       dateChange:function(){
+         console.log(this.form.value1[0]+" "+this.form.value1[1])
+          fetch('http://localhost:9090/api/GetUsefulPlane', {
+        method: 'POST',
+         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'takeoff=' +this.form.value1[0] +"&land="+this.form.value1[1]+"&com="+this.com
+      }).then(res => res.json()).then(data => {
+        console.log(data)
+        let midopt1 = []
+        for (let i = 0; i < data.length; i++) {
+          midopt1.push({value: data[i].PlaneId, label: data[i].PlaneId+" "+data[i].type})
+        }
+        this.options3 = midopt1
+      })
+       },
+       onprivice1Changed:function(){
+            //出发机场省份变化，回调查询市的变化
+            console.log(this.value2)
+            this.value3=''
+            this.options1=[]
+            fetch('http://localhost:9090/sqltest2', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify({'pinyin': this.value2}),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        })
+      }).then(res => res.json()).then(data => {
+        console.log(data)
+        let midopt1 = []
+        for (let i = 0; i < data.length; i++) {
+          midopt1.push({value: data[i].sname, label: data[i].sname})
+        }
+        this.options1 = midopt1
+      })
+       },
+       oncity1change:function(){
+         /*根据市的变化回调航点的变化 */
+         console.log(this.value3)
+         this.value4=''
+         this.options2=[]
+          fetch('http://localhost:9090/station3', {
+        method: 'POST',
+         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'com=' +this.com +"&city="+this.value3
+      }).then(res => res.json()).then(data => {
+        console.log(data)
+        let midopt1 = []
+        for (let i = 0; i < data.length; i++) {
+          midopt1.push({value: data[i].ICAO, label: data[i].name})
+        }
+        this.options2 = midopt1
+      })
+       },
+      onprivice2Changed:function(){
+            //出发机场省份变化，回调查询市的变化
+            console.log(this.value5)
+            this.value6=''
+            this.options4=[]
+            fetch('http://localhost:9090/sqltest2', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify({'pinyin': this.value5}),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        })
+      }).then(res => res.json()).then(data => {
+        console.log(data)
+        let midopt1 = []
+        for (let i = 0; i < data.length; i++) {
+          midopt1.push({value: data[i].sname, label: data[i].sname})
+        }
+        this.options4 = midopt1
+      })
+       },
+       oncity2change:function(){
+         /*根据市的变化回调航点的变化 */
+         console.log(this.value6)
+         this.value7=''
+         this.options5=[]
+          fetch('http://localhost:9090/station3', {
+        method: 'POST',
+         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'com=' +this.com +"&city="+this.value6
+      }).then(res => res.json()).then(data => {
+        console.log(data)
+        let midopt1 = []
+        for (let i = 0; i < data.length; i++) {
+          midopt1.push({value: data[i].ICAO, label: data[i].name})
+        }
+        this.options5 = midopt1
+      })
+       },
+       planechanged:function(){
+         fetch('http://localhost:9090/api/planetype', {
+        method: 'POST',
+         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'id=' +this.value8
+      }).then(res => res.json()).then(data => {
+        console.log(data)
+        this.s1=data.seat1
+        this.s2=data.seat2
+        this.s3=data.seat3
+        this.total=data.total
+        })
+       },
+       submit:function(){
+         var sendmsg={
+              "pid":this.value8,
+              "comid":this.com,
+              "pretakeoff":this.form.value1[0],
+              "prelanding":this.form.value1[1],
+              "takeoffplace":this.value4,
+              "landplace":this.value7,
+              "pricea":this.p1,
+              "priceb":this.p2,
+              "pricec":this.p3
+         }
+              console.log(sendmsg)
+         fetch('http://localhost:9090/api/AddSchedule', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify(sendmsg),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        })
+        }).then(res => res.json()).then(data=>{
+          if(data.status===1){
+            this.$message({
+            message: '插入成功',
+            type: 'success'
+          })
+           this.refresh()
+           this.dialogVisible = false
+          }else{
+              this.$message.error('插入失败')
+          }
+        })
+       },
+       refresh:function(){
+         this.tableData=[]
           fetch("http://localhost:9090/api/getbycompany?id="+this.com, {
             method: 'GET',
             credentials: 'include',
@@ -90,18 +418,69 @@ export default {
               'Content-Type': 'application/json'
             }),
           }).then(res=>res.json()).then(data=>{
-            console.log(data)
             for(let i=0;i<data.length;i++){
+               data[i].pre_takeoff=this.vertDate(data[i].pre_takeoff)
+               data[i].pre_landing=this.vertDate(data[i].pre_landing)
               this.tableData.push(data[i])
             }
           })
-    },
-    data(){
-        return{
-            tableData:[]
-        }
-    },
-     props: ['com'],
+       },
+       ondel:function(index){
+          console.log(index)
+          console.log(this.tableData[index])
+          fetch('http://localhost:9090/api/GetAirportCode', {
+        method: 'POST',
+         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'name=' +this.tableData[index].takeoffplace
+        }).then(res=>res.text()).then(data=>{
+          console.log(data)
+          this.takeoffval=data
+           fetch('http://localhost:9090/api/GetAirportCode', {
+        method: 'POST',
+         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'name=' +this.tableData[index].landplace
+        }).then(res=>res.text()).then(data=>{
+          console.log(this.takeoffval+" "+data)
+          var sendmsg={
+              "pid":this.tableData[index].Pid,
+              "pretakeoff":this.tableData[index].pre_takeoff,
+              "prelanding":this.tableData[index].pre_landing,
+              "takeoffplace":this.takeoffval,
+              "landplace":data
+          }
+          console.log(sendmsg)
+           fetch('http://localhost:9090/api/deleteSchedule', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify(sendmsg),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        })
+        }).then(res => res.json()).then(data=>{
+          if(data.status===1){
+            this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+           this.refresh()
+           this.dialogVisible = false
+          }else{
+              this.$message.error('插入失败')
+          }
+        })
+        })
+        })
+       },
+       onchange:function(index){
+          console.log(index)
+       },
+     }
 }
 </script>
 
