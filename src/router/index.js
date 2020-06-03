@@ -6,6 +6,12 @@ import Login from '@/components/Login.vue'
 console.log('indes调用')
 Vue.use(VueRouter)
 Vue.use(require('vue-cookies'))
+let head = document.getElementsByTagName('head');
+let meta = document.createElement('meta');
+meta.name = 'referrer';
+//根据实际情况修改referrer的值，可选值参考上文
+meta.content = 'no-referrer';
+head[0].appendChild(meta);
   const routes = [
   {
     path: '/Login',
@@ -38,7 +44,7 @@ const router = new VueRouter({
 })
 router.beforeEach(function(to, from, next) {
   console.log(from.path+" "+to.path)
-  fetch("http://localhost:9090/isLogin", {
+  fetch("http://49.233.81.150:9090/isLogin", {
     method: 'POST',
     credentials: 'include',
     headers: new Headers({
@@ -51,7 +57,7 @@ router.beforeEach(function(to, from, next) {
     }
     //let token = false;*/
     if('/'===to.path){next('/Login');return}
-    if(to.meta.requireAuth&&data==='0'){next('/Login');return}
+    if(to.meta.requireAuth&&data==='408'){next('/Login');return}
     next();
   }).then(error=>console.log(error))
 });

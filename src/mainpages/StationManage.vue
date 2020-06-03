@@ -79,7 +79,7 @@ export default {
     name:'StationManage',
     created:function(){
        this.tableData=[]
-          fetch("http://localhost:9090/station?com="+this.com, {
+          fetch("http://49.233.81.150:9090/station?com="+this.com, {
             method: 'GET',
             credentials: 'include',
             headers: new Headers({
@@ -94,7 +94,7 @@ export default {
     },
         beforeCreate: function () {
     console.log('钩子函数被调用了')
-    fetch('http://localhost:9090/sqltest1',{
+    fetch('http://49.233.81.150:9090/sqltest1',{
             method: 'GET',
             credentials: 'include',
             headers: new Headers({
@@ -139,7 +139,7 @@ export default {
     },methods:{
       ondelClick:function(index){
         console.log(this.tableData[index].name+this.com)
-        fetch("http://localhost:9090/api/Delstation?com="+this.com+"&name="+this.tableData[index].name, {
+        fetch("http://49.233.81.150:9090/api/Delstation?com="+this.com+"&name="+this.tableData[index].name, {
             method: 'GET',
             credentials: 'include',
             headers: new Headers({
@@ -149,7 +149,7 @@ export default {
             console.log(data)
             if(data==='1'){
               this.tableData=[]
-          fetch("http://localhost:9090/station?com="+this.com, {
+          fetch("http://49.233.81.150:9090/station?com="+this.com, {
             method: 'GET',
             credentials: 'include',
             headers: new Headers({
@@ -176,7 +176,7 @@ export default {
           return 
         }else{
           this.tableData=[]
-          fetch('http://localhost:9090/station2', {
+          fetch('http://49.233.81.150:9090/station2', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -187,7 +187,7 @@ export default {
         if (data === '0') {
           this.$message.error('插入失败')
         } else {
-                    fetch("http://localhost:9090/station?com="+this.com, {
+                    fetch("http://49.233.81.150:9090/station?com="+this.com, {
             method: 'GET',
             credentials: 'include',
             headers: new Headers({
@@ -210,7 +210,7 @@ export default {
       selectprovice:function(){
         console.log(this.value)
         this.value1=''
-        fetch('http://localhost:9090/sqltest2', {
+        fetch('http://49.233.81.150:9090/sqltest2', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify({'pinyin': this.value}),
@@ -228,7 +228,7 @@ export default {
       },
       selectcity:function(){
         this.value2=''
-        fetch('http://localhost:9090/airport', {
+        fetch('http://49.233.81.150:9090/airport', {
         method: 'POST',
          credentials: 'include',
         headers: {
@@ -246,7 +246,7 @@ export default {
       },
       selectairport:function(){
         console.log(this.value2+" "+this.com)
-        fetch('http://localhost:9090/station1', {
+        fetch('http://49.233.81.150:9090/station1', {
         method: 'POST',
         credentials: 'include',
         headers: {

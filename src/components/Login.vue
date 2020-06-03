@@ -72,7 +72,7 @@ export default {
         console.log(res)
         var sendmsg={"name":this.form.name,"password":res,"type":this.form.value}
         console.log(sendmsg)
-        fetch('http://localhost:9090/api/Login', {
+        fetch('http://49.233.81.150:9090/api/Login', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify(sendmsg),

@@ -1,5 +1,6 @@
 <template>
 <el-container>
+  <!-- 999管理员权限，101 签派权限 100 管制权限 -->
   <el-aside width="200px">
       <el-menu
       background-color="#545c64"
@@ -12,31 +13,31 @@
         <i class="el-icon-menu"></i>
         <span slot="title">总览</span>
       </el-menu-item>
-      <el-menu-item index="2" >
+      <el-menu-item index="2" v-if="permission==='999'||permission==='101'">
         <i class="el-icon-menu"></i>
         <span slot="title">飞机管理</span>
       </el-menu-item>
-      <el-menu-item index="3">
+      <el-menu-item index="3" v-if="permission==='999'||permission==='101'">
         <i class="el-icon-menu"></i>
         <span slot="title">航点管理</span>
       </el-menu-item>
-      <el-menu-item index="4">
+      <el-menu-item index="4" v-if="permission==='999'||permission==='101'">
         <i class="el-icon-menu"></i>
         <span slot="title">航线管理</span>
       </el-menu-item>
-      <el-menu-item index="5" v-if="id=999">
+      <el-menu-item index="5" v-if="permission==='999'">
         <i class="el-icon-menu"></i>
         <span slot="title">管理员身份设置</span>
       </el-menu-item>
-      <el-menu-item index="6">
+      <el-menu-item index="6" v-if="permission==='999'||permission==='100'">
         <i class="el-icon-menu"></i>
-        <span slot="title">延误报告</span>
+        <span slot="title">延误管理</span>
       </el-menu-item>
-      <el-menu-item index="7">
+      <el-menu-item index="7" v-if="permission==='999'">
         <i class="el-icon-menu"></i>
         <span slot="title">利润分析</span>
       </el-menu-item>
-      <el-menu-item index="8" v-if="id=999">
+      <el-menu-item index="8" v-if="permission==='999'">
         <i class="el-icon-menu" ></i>
         <span slot="title">数据备份</span>
       </el-menu-item>
@@ -50,9 +51,9 @@
      <el-main v-else-if="selectMenu[0]==='2'"><PlaneManage v-bind:com="com" /> </el-main>
      <el-main v-else-if="selectMenu[0]==='3'"><StationManage v-bind:com="com"/> </el-main>
      <el-main v-else-if="selectMenu[0]==='4'"><LineManage v-bind:com="com"/> </el-main>
-     <el-main v-else-if="selectMenu[0]==='5'"><AdstorManage/> </el-main>
-     <el-main v-else-if="selectMenu[0]==='6'"><DelayReport/> </el-main>
-     <el-main v-else-if="selectMenu[0]==='7'"><ProfitAyansis/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='5'"><AdstorManage v-bind:com="com"/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='6'"><DelayReport v-bind:com="com"/> </el-main>
+     <el-main v-else-if="selectMenu[0]==='7'"><ProfitAyansis v-bind:com="com"/> </el-main>
      <el-main v-else-if="selectMenu[0]==='8'"><BackUp/> </el-main>
 </el-container>
 </template>
@@ -83,12 +84,16 @@ export default {
       this.username=this.$route.query.name
       this.permission=this.$route.query.id
       this.com=this.$route.query.com
+      console.log(
+      this.$route.query,
+      this.$root.islogin,
+      this.permission)
     }, methods: {
       handleSelect(key,keyPath){
         this.selectMenu=keyPath
         if(this.selectMenu[0]==='9'){
           console.log('改变了')
-          fetch("http://localhost:9090/api/loginout", {
+          fetch("http://49.233.81.150:9090/api/loginout", {
             method: 'GET',
             credentials: 'include',
             headers: new Headers({

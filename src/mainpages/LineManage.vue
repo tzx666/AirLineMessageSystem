@@ -82,17 +82,55 @@
       </el-table-column>
       <el-table-column
         prop="delaycode"
-        label="延误代码">
+        label="状态">
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="150">
          <template slot-scope="scope">
-        <el-button  type="text" @click="ondel(scope.$index)">删除</el-button>
         <el-button  type="text" @click="onchange(scope.$index)">修改</el-button>
+        <el-button  type="text" @click="ondel(scope.$index)">删除</el-button>
          </template>
       </el-table-column>
     </el-table>
-<el-dialog title="新建航线" :visible.sync="dialogVisible" fullscreen center>
-  <el-form :model="form1" label-width="500px">
+    <el-dialog title="修改航线" :visible.sync="changedialogVisible" fullscreen center>
+      <el-form label-width="500px" style="width:800px">
+        <el-form-item label="修改起降时间">
+          <el-divider></el-divider>
+          <span>预计起飞：{{willtime1}} </span>
+           <el-divider></el-divider>
+          <span>预计降落：{{willtime2}}</span>
+           <el-divider></el-divider>
+            <el-date-picker
+     @change="dateChange"
+      v-model="changetime1"
+      start-placeholder="起飞时间"
+      end-placeholder="降落时间"
+      :default-time="['12:00:00']"
+      type="datetimerange"
+      value-format="yyyy-MM-dd HH:mm:ss"
+      placeholder="选择日期时间">
+    </el-date-picker>
+        </el-form-item>
+        <el-form-item label="修改价格">
+          <el-divider></el-divider>
+          <div>
+          <span>头等舱余票：{{rs1}} 票价：{{p1}}</span>
+          <el-input v-model="np1" placeholder="请输入更改后价格"></el-input>
+          <el-divider></el-divider>
+          <span>商务舱余票：{{rs2}} 票价：{{p2}}</span>
+          <el-input v-model="np2" placeholder="请输入更改后价格"></el-input>
+          <el-divider></el-divider>
+          <span>经济舱余票：{{rs3}} 票价：{{p3}}</span>
+          <el-input v-model="np3" placeholder="请输入更改后价格"></el-input>
+          </div>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+    <el-button @click="changedialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="changesubmit">确 定</el-button>
+  </div>
+    </el-dialog>
+<el-dialog title="新建航线" :visible.sync="dialogVisible" fullscreen center >
+  <el-form :model="form1" label-width="500px" style="width:800px">
     <el-form-item label="起飞机场" >
        <el-select v-model="value2" placeholder="选择省" @change="onprivice1Changed">
     <el-option
@@ -192,7 +230,7 @@
 export default {
     name:'LineManage',
     beforeCreate:function(){
-       fetch('http://localhost:9090/sqltest1',{
+       fetch('http://49.233.81.150:9090/sqltest1',{
             method: 'GET',
             credentials: 'include',
             headers: new Headers({
@@ -217,6 +255,7 @@ export default {
         return{
             tableData:[],
             dialogVisible:false,
+            changedialogVisible:false,
             form:{
               name:'',
               value1:''
@@ -237,12 +276,26 @@ export default {
             p1:'',
             p2:'',
             p3:'',
+            np1:'',
+            np2:'',
+            np3:'',
             s1:'',
             s2:'',
             s3:'',
+            rs1:"",
+            rs2:'',
+            rs3:'',
             total:'',
+            time1:'',
+            willtime1:'',
+            willtime2:'',
+            changetime1:'',
             takeoffval:'',
             landval:'',
+            upid:'',
+            ptk:'',
+            pl:'',
+            willchangeindex:'',
             form1:{
 
             }
@@ -260,7 +313,7 @@ export default {
        },
        dateChange:function(){
          console.log(this.form.value1[0]+" "+this.form.value1[1])
-          fetch('http://localhost:9090/api/GetUsefulPlane', {
+          fetch('http://49.233.81.150:9090/api/GetUsefulPlane', {
         method: 'POST',
          credentials: 'include',
         headers: {
@@ -281,7 +334,7 @@ export default {
             console.log(this.value2)
             this.value3=''
             this.options1=[]
-            fetch('http://localhost:9090/sqltest2', {
+            fetch('http://49.233.81.150:9090/sqltest2', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify({'pinyin': this.value2}),
@@ -302,7 +355,7 @@ export default {
          console.log(this.value3)
          this.value4=''
          this.options2=[]
-          fetch('http://localhost:9090/station3', {
+          fetch('http://49.233.81.150:9090/station3', {
         method: 'POST',
          credentials: 'include',
         headers: {
@@ -323,7 +376,7 @@ export default {
             console.log(this.value5)
             this.value6=''
             this.options4=[]
-            fetch('http://localhost:9090/sqltest2', {
+            fetch('http://49.233.81.150:9090/sqltest2', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify({'pinyin': this.value5}),
@@ -344,7 +397,7 @@ export default {
          console.log(this.value6)
          this.value7=''
          this.options5=[]
-          fetch('http://localhost:9090/station3', {
+          fetch('http://49.233.81.150:9090/station3', {
         method: 'POST',
          credentials: 'include',
         headers: {
@@ -361,7 +414,7 @@ export default {
       })
        },
        planechanged:function(){
-         fetch('http://localhost:9090/api/planetype', {
+         fetch('http://49.233.81.150:9090/api/planetype', {
         method: 'POST',
          credentials: 'include',
         headers: {
@@ -389,7 +442,7 @@ export default {
               "pricec":this.p3
          }
               console.log(sendmsg)
-         fetch('http://localhost:9090/api/AddSchedule', {
+         fetch('http://49.233.81.150:9090/api/AddSchedule', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify(sendmsg),
@@ -411,7 +464,7 @@ export default {
        },
        refresh:function(){
          this.tableData=[]
-          fetch("http://localhost:9090/api/getbycompany?id="+this.com, {
+          fetch("http://49.233.81.150:9090/api/getbycompany?id="+this.com, {
             method: 'GET',
             credentials: 'include',
             headers: new Headers({
@@ -419,6 +472,16 @@ export default {
             }),
           }).then(res=>res.json()).then(data=>{
             for(let i=0;i<data.length;i++){
+              if(data[i].isdelay===0){
+                data[i].isdelay='否'
+                data[i].delaycode='正常'
+              }else if(data[i].isdelay===-1){
+                 data[i].isdelay='未起飞'
+                 data[i].delaycode='计划'
+              }else{
+                data[i].isdelay='异常'
+                data[i].delaycode='延误或取消'
+              }
                data[i].pre_takeoff=this.vertDate(data[i].pre_takeoff)
                data[i].pre_landing=this.vertDate(data[i].pre_landing)
               this.tableData.push(data[i])
@@ -428,7 +491,7 @@ export default {
        ondel:function(index){
           console.log(index)
           console.log(this.tableData[index])
-          fetch('http://localhost:9090/api/GetAirportCode', {
+          fetch('http://49.233.81.150:9090/api/GetAirportCode', {
         method: 'POST',
          credentials: 'include',
         headers: {
@@ -438,7 +501,7 @@ export default {
         }).then(res=>res.text()).then(data=>{
           console.log(data)
           this.takeoffval=data
-           fetch('http://localhost:9090/api/GetAirportCode', {
+           fetch('http://49.233.81.150:9090/api/GetAirportCode', {
         method: 'POST',
          credentials: 'include',
         headers: {
@@ -455,7 +518,7 @@ export default {
               "landplace":data
           }
           console.log(sendmsg)
-           fetch('http://localhost:9090/api/deleteSchedule', {
+           fetch('http://49.233.81.150:9090/api/deleteSchedule', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify(sendmsg),
@@ -479,8 +542,74 @@ export default {
        },
        onchange:function(index){
           console.log(index)
+          this.willchangeindex=index
+          this.p1=this.tableData[index].tickctA_price
+          this.p2=this.tableData[index].tickctB_price
+          this.p3=this.tableData[index].tickctC_price
+          this.rs1=this.tableData[index].tickctA_rest
+          this.rs2=this.tableData[index].tickctB_rest
+          this.rs3=this.tableData[index].tickctC_rest
+          this.willtime1=this.tableData[index].pre_takeoff
+          this.willtime2=this.tableData[index].pre_landing
+          this.upid=this.tableData[index].Pid
+          this.ptk=this.tableData[index].pre_takeoff
+          this.pl=this.tableData[index].pre_landing
+          this.changedialogVisible=true
        },
-     }
+        changesubmit:function(){
+           var flag=0;
+            if(this.changetime1.length===0||this.changetime1===null){
+              var t1=this.willtime1
+              var t2=this.willtime2
+              this.changetime1={'t1':t1,'t2':t2}
+              flag=1;
+              }else{
+              t1=this.changetime1[0]
+              t2=this.changetime1[1]
+              this.changetime1={'t1':t1,'t2':t2}
+              flag=0;
+              }
+            if(this.np1==="")this.np1=this.p1
+            if(this.np2==="")this.np2=this.p2
+            if(this.np3==="")this.np3=this.p3
+              if(flag===1&&this.np1===this.p1&&this.np2===this.p2&&this.np3===this.p3){
+                this.$message.error("未做更改！")
+              console.log("日期无更改"+" "+this.np1+" "+this.np2+" "+this.np3)
+            }else{
+               console.log(this.changetime1+" "+this.np1+" "+this.np2+" "+this.np3)
+              var msg={
+                pid:this.upid,
+                pretakeoff:this.ptk,
+                prelanding:this.pl,
+                time1:this.changetime1.t1,
+                time2:this.changetime1.t2,
+                priceA:this.np1,
+                priceB:this.np2,
+                priceC:this.np3
+              }
+              console.log(msg)
+                         fetch('http://49.233.81.150:9090/api/updateSchedule', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify(msg),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        })
+        }).then(res => res.json()).then(data=>{
+          if(data.status===1){
+            this.$message({
+            message: '更新成功',
+            type: 'success'
+          })
+           this.refresh()
+          this.changedialogVisible = false
+          }else{
+              this.$message.error('插入失败')
+          }
+      })
+    }   
+  }
+ }
 }
 </script>
 

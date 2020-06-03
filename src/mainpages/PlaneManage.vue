@@ -54,7 +54,7 @@ export default {
     name:'PlaneManage',
     created:function(){
        this.tableData=[]
-          fetch("http://localhost:9090/api/GetCompanyPlane?com="+this.com, {
+          fetch("http://49.233.81.150:9090/api/GetCompanyPlane?com="+this.com, {
             method: 'GET',
             credentials: 'include',
             headers: new Headers({

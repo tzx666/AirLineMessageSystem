@@ -101,7 +101,7 @@ export default {
           hash:this.form.hash
         }
         console.log(msg)
-        fetch('http://localhost:9090/api/Register', {
+        fetch('http://49.233.81.150:9090/api/Register', {
         method: 'POST',
         body: JSON.stringify(msg),
         headers: new Headers({
@@ -132,7 +132,7 @@ export default {
     },
     created:function (){
       console.log("预备启动")
-      fetch("http://localhost:9090/api/getAllAirlines")
+      fetch("http://49.233.81.150:9090/api/getAllAirlines")
   .then(response => response.json())
   .then(result => {
     let midopt1 = []

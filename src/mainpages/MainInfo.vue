@@ -44,7 +44,7 @@ export default {
     name:'MainInfo',
     created:function(){
         console.log(this.com)
-        fetch("http://localhost:9090/api/maininfo?com="+this.com, {
+        fetch("http://49.233.81.150:9090/api/maininfo?com="+this.com, {
             method: 'GET',
             credentials: 'include',
             headers: new Headers({
