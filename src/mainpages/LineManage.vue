@@ -8,7 +8,8 @@
 </el-row>
     <el-table
       :data="tableData"
-      style="width: 100%">
+      style="width: 100%"
+      :row-class-name="tableRowClassName">
       <el-table-column
         prop="Pid"
         label="执飞注册号"
@@ -474,7 +475,7 @@ export default {
             for(let i=0;i<data.length;i++){
               if(data[i].isdelay===0){
                 data[i].isdelay='否'
-                data[i].delaycode='正常'
+                data[i].delaycode='已起飞'
               }else if(data[i].isdelay===-1){
                  data[i].isdelay='未起飞'
                  data[i].delaycode='计划'
@@ -489,8 +490,10 @@ export default {
           })
        },
        ondel:function(index){
-          console.log(index)
-          console.log(this.tableData[index])
+          if(this.tableData[index].isdelay!='未起飞'){
+              this.$message.error('已起飞航班无法删除！')
+              return
+          }
           fetch('http://49.233.81.150:9090/api/GetAirportCode', {
         method: 'POST',
          credentials: 'include',
@@ -542,7 +545,10 @@ export default {
        },
        onchange:function(index){
           console.log(index)
-          this.willchangeindex=index
+          if(this.tableData[index].isdelay!='未起飞'){
+              this.$message.error('已起飞航班无法修改！')
+          }else{
+            this.willchangeindex=index
           this.p1=this.tableData[index].tickctA_price
           this.p2=this.tableData[index].tickctB_price
           this.p3=this.tableData[index].tickctC_price
@@ -555,6 +561,8 @@ export default {
           this.ptk=this.tableData[index].pre_takeoff
           this.pl=this.tableData[index].pre_landing
           this.changedialogVisible=true
+          }
+          
        },
         changesubmit:function(){
            var flag=0;
@@ -607,12 +615,26 @@ export default {
               this.$message.error('插入失败')
           }
       })
-    }   
-  }
+    } 
+  },tableRowClassName({row, rowIndex}) {
+      console.log(row)
+        if (this.tableData[rowIndex].isdelay!='否'&&this.tableData[rowIndex].isdelay!='未起飞') {
+          return 'warning-row';
+        } else if (this.tableData[rowIndex].isdelay==='否') {
+          return 'success-row';
+        }
+        return '';
+      }
  }
 }
 </script>
 
-<style scoped>
+<style>
+ .el-table .warning-row {
+    background: oldlace;
+  }
 
+  .el-table .success-row {
+    background: #f0f9eb;
+  }
 </style>
